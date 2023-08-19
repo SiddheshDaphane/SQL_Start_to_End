@@ -1,0 +1,124 @@
+-- DAY 1
+
+-- This is DDL -> Data Defination language (data about data)
+CREATE TABLE amazon_orders
+(
+order_id INT,
+order_date DATE,
+product_name VARCHAR(50),
+total_price decimal(10,2),
+payment_method VARCHAR(20)
+);
+-- Delete a table not data
+DROP TABLE amazon_orders;
+-- This is DML -> Data Manipulation language
+INSERT INTO amazon_orders values(1,'2022-10-01', 'Baby Milk', 30.5, 'UPI');
+INSERT INTO amazon_orders values(2,'2022-10-02', 'Baby Powder', 130, 'Credit Card');
+INSERT INTO amazon_orders values(3,'2022-10-03', 'Baby slipper', 45, 'Credit Card');
+INSERT INTO amazon_orders values(4,'2022-10-04', 'Baby cloth', 70, 'UPI');
+
+-- To delete data but not a table
+DELETE from amazon_orders;
+-- This is DQL -> Data Query Language
+SELECT * 
+FROM amazon_orders;
+
+-- DAY 2
+
+-- Changing the data type of a column. If you drop the column then data will be lost
+-- Alter command is DDL. We are changing defination of a table.
+
+ALTER TABLE amazon_orders ALTER COLUMN order_date DATETIME
+SELECT * FROM amazon_orders
+
+INSERT INTO amazon_orders values(3,'2022-10-01 4:28:30', 'Baby Soap', 15, 'UPI');
+SELECT * FROM amazon_orders
+
+-- Adding a column. Using Alter we can add column at last only. You cannot add the column
+-- between the columns
+ALTER TABLE amazon_orders ADD user_name VARCHAR(20)
+SELECT * FROM amazon_orders
+
+INSERT INTO amazon_orders values(4,'2022-09-2 10:8:3', null , 15, 'UPI', 'Siddhesh');
+INSERT INTO amazon_orders values(5,'2-09-2022 10:8:3', null , 15, 'UPI', 'Siddhesh');
+-- Compare the above insert statements. Especially in date section. 
+/*
+Here if you don't give 'Siddhesh' value in the insert statement then it will through an error
+*/
+SELECT * FROM amazon_orders
+
+ALTER TABLE amazon_orders ADD category VARCHAR(20)
+
+-- Droping the column
+ALTER TABLE amazon_orders DROP column category
+SELECT * FROM amazon_orders
+
+-- Constraints 
+DROP TABLE a_orders
+CREATE TABLE a_orders
+(
+order_id INT NOT null UNIQUE,
+order_date DATE,
+product_name VARCHAR(50),
+total_price decimal(10,2),
+payment_method VARCHAR(20) check(payment_method in ('UPI', 'CREDIT CARD')),
+discount INT check (discount <= 20),
+category VARCHAR(20) DEFAULT 'Mens wear'
+);
+
+-- NOT NULL constraint
+INSERT INTO a_orders values(null,'2022-10-01', 'Baby Milk', 30.5, 'UPI'); -- This will throw an error
+
+-- CHECK constraint
+INSERT INTO a_orders values(1,'2022-10-01', 'Baby Milk', 30.5, 'Internate Baking'); -- This will throw an error because of CHECK constraint
+INSERT INTO a_orders values(1,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19); 
+
+SELECT * FROM a_orders
+
+-- UNIQUE Constraint
+INSERT INTO a_orders values(1,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19); -- This will throw an error because of UNIQUE constraint
+
+-- DEFAULT Constraint
+INSERT INTO a_orders values(1,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19, 'Kids wear'); --
+SELECT * FROM a_orders
+
+INSERT INTO a_orders values(2,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19); 
+-- Even though we have DEFAULT constraint, we still need to give a value for it otherwise it will give an error
+INSERT INTO a_orders(order_id, order_date,product_name, total_price, payment_method, discount) values(2,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19); 
+SELECT * FROM a_orders
+
+INSERT INTO a_orders(order_id, order_date,product_name, total_price, payment_method, discount, category) values(3,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19, default); 
+SELECT * FROM a_orders
+
+-- Primary key = UNIQUE + NOT NULL
+DROP TABLE a_orders
+CREATE TABLE a_orders
+(
+order_id INT ,
+order_date DATE,
+product_name VARCHAR(50),
+total_price decimal(10,2),
+payment_method VARCHAR(20) check(payment_method in ('UPI', 'CREDIT CARD')),
+discount INT check (discount <= 20),
+category VARCHAR(20) DEFAULT 'Mens wear'
+PRIMARY KEY (order_id)
+);
+
+INSERT INTO a_orders values(null,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19, 'Kids wear'); -- Cannot insert a NULL value in primary key. This will give an error
+INSERT INTO a_orders(order_id, order_date,product_name, total_price, payment_method, discount) values(2,'2022-10-01', 'Baby Milk', 30.5, 'UPI', 19); -- Cannot insert dublicate also.
+
+SELECT * FROM a_orders
+
+-- DELETE statement
+delete from a_orders where order_id=3
+SELECT * FROM a_orders
+
+-- UPDATE statement 
+UPDATE a_orders set discount=10 
+SELECT * FROM a_orders
+
+UPDATE a_orders set discount=14 where order_id=2
+SELECT * FROM a_orders
+
+UPDATE a_orders set discount=14, payment_method= 'credit card' where order_id=2
+SELECT * FROM a_orders
